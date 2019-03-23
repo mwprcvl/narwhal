@@ -1,0 +1,23 @@
+version: '3.6'
+services:
+  py:
+    build:
+      args:
+        base_tag: 4.5.12
+        conda_user: appuser
+        conda_home: /appuser
+      context: .
+    command: bash -ic 'jupyter notebook --notebook-dir=/py_notebooks --no-browser --ip=0.0.0.0'
+    environment:
+      - JUPYTER_TOKEN=abc123
+    image: valdisere:latest
+    ports:
+      -
+        published: 8889
+        target: 8888
+    tty: true
+    volumes:
+      -
+        type: bind
+        source: ./py_notebooks
+        target: /py_notebooks

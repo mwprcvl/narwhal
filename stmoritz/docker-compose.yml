@@ -1,0 +1,63 @@
+version: "3.6"
+services:
+  db:
+    build:
+      args:
+        base_tag: "11.2-alpine"
+        init_scripts_path: ${DB_INIT_SCRIPTS_PATH}
+      context: ./db/
+    environment:
+      - POSTGRES_USER=${POSTGRES_DB_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_DB_PASS}
+      - POSTGRES_DB=${POSTGRES_DB_NAME}
+    image: ${PROJECT}_db:latest
+    ports:
+      -
+        published: ${POSTGRES_DB_HOST_PORT}
+        target: ${POSTGRES_DB_PORT}
+    volumes:
+      -
+        type: volume
+        source: db_1
+        target: /var/lib/postgresql/data
+  py:
+    build:
+      args:
+        base_tag: "4.5.12"
+        environment_file: ${PY_ENVIRONMENT_FILE}
+        home: /usr/local/appuser
+        user: appuser
+      context: ./py/
+    command: 
+      - bash 
+      - -ic 
+      - 'jupyter notebook --notebook-dir=/notebooks --no-browser --ip=0.0.0.0'
+    depends_on:
+      - db
+    environment:
+      - JUPYTER_TOKEN=123
+      - DB_HOST=${POSTGRES_DB_HOST}
+      - DB_PORT=${POSTGRES_DB_PORT}
+      - DB_NAME=${POSTGRES_DB_NAME}
+      - DB_USER=${POSTGRES_DB_USER}
+      - DB_PASS=${POSTGRES_DB_PASS}
+    image: ${PROJECT}_py:latest
+    ports:
+      -
+        published: ${PY_DEBUG_PORT}
+        target: 3000
+      -
+        published: ${PY_NOTEBOOK_PORT}
+        target: 8888
+    tty: true
+    volumes:
+      -
+        type: bind
+        source: ./py/notebooks
+        target: /notebooks
+      -
+        type: bind
+        source: ./py/app
+        target: /app
+volumes:
+  db_1:
