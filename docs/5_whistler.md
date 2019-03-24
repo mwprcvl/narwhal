@@ -35,7 +35,7 @@ WORKDIR /home/rstudio
 
 I will run this service using a `docker-compose` configuration. The environment variables I have noted here for reference are `PASSWORD`, which sets the login password for the user `rstudio` on the server. Using a different port for publication and target reflects my use case of many images running simultaneously. The volume bind here means that local code is accessible to the remote container, and deliberately allows the R session itself to be stateful if I restart the container.
 
-```
+```yml
 version: '3.6'
 services:
   rs:
@@ -61,6 +61,14 @@ services:
 ## Launch
 
 Simply running `docker-compose up -d` starts the container. Then go to `${DOCKER_IP}:18787` in a browser to start an Rstudio session. `${DOCKER_IP}` is either `localhost` or the VM's IP address.
+
+## Running an Rscript
+
+A file in the R container can be executed from the command line using `Rscript`.
+
+```sh
+docker exec -it whistler_rs_1 Rscript hello.R
+```
 
 ## Summary
 

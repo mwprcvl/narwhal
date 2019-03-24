@@ -11,3 +11,6 @@ down:
 
 bashrs:
 	@docker exec -it whistler_rs_1 bash
+
+app:
+	@docker exec -it whistler_rs_1 Rscript hello.R

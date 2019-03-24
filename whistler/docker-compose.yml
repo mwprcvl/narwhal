@@ -3,7 +3,7 @@ services:
   rs:
     build:
       args:
-        base_tag: "3.5.2"
+        base_tag: '3.5.2'
       context: .
     environment:
       - PASSWORD=abc123
