@@ -2,7 +2,7 @@
 #
 # makefile for docker commands
 #
-proj := valdisere
+proj := saasfee
 
 build:
 	@docker-compose build
@@ -17,4 +17,4 @@ bash:
 	@docker exec -it ${proj}_py_1 bash
 
 expl:
-	@docker exec -it valdisere_py_1 bash -ic "conda list --explicit" > explicit.yml
+	@docker exec -it saasfee_py_1 bash -ic "conda list --explicit" > explicit.yml

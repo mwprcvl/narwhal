@@ -26,7 +26,7 @@ ENV USER=${conda_user}
 USER ${USER}
 WORKDIR ${conda_home}
 RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
-    echo "conda activate valdisere" >> ~/.bashrc
+    echo "conda activate saasfee" >> ~/.bashrc
 
 # port for jupyter
 EXPOSE 8888

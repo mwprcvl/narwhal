@@ -2,7 +2,7 @@
 
 ## Purpose
 
-I wanted to set up an Anaconda Python environment on a Docker container. This would be a starting point for a project that could be developed on a laptop and scaled on a server. This information is also captured in a working example [here](../valdisere).
+I wanted to set up an Anaconda Python environment on a Docker container. This would be a starting point for a project that could be developed on a laptop and scaled on a server. This information is also captured in a working example [here](../saasfee).
 
 ## Prerequisites
 
@@ -21,7 +21,7 @@ RUN /opt/conda/bin/conda env create --file environment.yml && \
 ```
 
 ```yml
-name: valdisere
+name: saasfee
 dependencies:
   - python=3.7
   - jupyter
@@ -66,7 +66,7 @@ ENV USER=${conda_user}
 USER ${USER}
 WORKDIR ${conda_home}
 RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
-    echo "conda activate valdisere" >> ~/.bashrc
+    echo "conda activate saasfee" >> ~/.bashrc
 ```
 
 Secondly, the Compose YAML should invoke an interactive shell when launching Jupyter to use the environment.
@@ -86,11 +86,11 @@ The Compose YAML should set a password for Jupyter for login from the browser, a
     - JUPYTER_TOKEN=abc123
   ports:
     -
-      published: 8889
+      published: 1888
       target: 8888
 ```
 
-The Jupyter notebook is then accessible at `<docker_ip>:8889/` using the password `abc123`.
+The Jupyter notebook is then accessible at `<docker_ip>:18888/` using the password `abc123`.
 
 ## Making locally editable code available to the container
 
@@ -110,7 +110,7 @@ Initially I gave only approximate versions for the packages I wanted in my `cond
 
 ```sh
 docker-compose up -d
-docker exec -it valdisere_py_1 bash -ic "conda list --explicit" > explicit.yml
+docker exec -it saasfee_py_1 bash -ic "conda list --explicit" > explicit.yml
 docker-compose down
 ```
 

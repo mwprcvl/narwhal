@@ -10,10 +10,10 @@ services:
     command: bash -ic 'jupyter notebook --notebook-dir=/py_notebooks --no-browser --ip=0.0.0.0'
     environment:
       - JUPYTER_TOKEN=abc123
-    image: valdisere:latest
+    image: saasfee:latest
     ports:
       -
-        published: 8889
+        published: 18888
         target: 8888
     tty: true
     volumes:

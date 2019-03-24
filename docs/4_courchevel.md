@@ -153,7 +153,7 @@ volumes:
 Another option for decreasing boot time if the initialization scripts are long running is to use of copy of the volume used by the database. First I tag the image to use for clarity.
 
 ```sh
-docker tag courchevel:latest courchevel:post_init
+docker tag courchevel:latest courchevel:postinit
 ```
 
 A second compose file points to the image I just tagged, using a source volume that will contain a copy of the volume created by the initialization that the first container run performed.
@@ -164,26 +164,26 @@ services:
   db:
     env_file:
       - ${ENV_FILE}
-    image: courchevel:post_init
+    image: courchevel:postinit
     ports:
       -
-        published: ${POST_INIT_POSTGRES_HOST_PORT}
+        published: ${POSTINIT_POSTGRES_HOST_PORT}
         target: 5432
     volumes:
       -
         type: bind
-        source: ./db_data_post_init
+        source: ./db_data_postinit
         target: /var/lib/postgresql/data
 ```
 
 For the older Mac, I changed the volume declaration to be consistent with my first YAML file, but instead using `db_2`, which I will create later.
 
-I copy the volume from the first container to make it available to the second without modifying the original copy; this is so that I can restart quickly if I make breaking changes to the data. The second container is now launched using the alternate compose file, and an alternate project name to avoid a namespace collision with the first container. I capture this in `post_init_up.sh`.
+I copy the volume from the first container to make it available to the second without modifying the original copy; this is so that I can restart quickly if I make breaking changes to the data. The second container is now launched using the alternate compose file, and an alternate project name to avoid a namespace collision with the first container. I capture this in `postinit_up.sh`.
 
 ```sh
-rm -r ./db_data_post_init
-mkdir -p ./db_data_post_init
-cp -r ./db_data/* ./db_data_post_init
+rm -r ./db_data_postinit
+mkdir -p ./db_data_postinit
+cp -r ./db_data/* ./db_data_postinit
 ```
 
 Again, for the older Mac this script is replaced with one that copies the `docker volume`, `courchevel_db_1`, into `courchevelpostinit_db_1`. Script from [here](https://github.com/gdiepen/docker-convenience-scripts)
@@ -195,10 +195,10 @@ bash docker_volume_clone.sh courchevel_db_1 courchevelpostinit_db_1
 In either case, the container using the cloned or copied Docker volume can now be started.
 
 ```sh
-docker-compose -f docker-compose-post_init.yml -p courchevelpostinit_db_1 down
+docker-compose -f docker-compose-postinit.yml -p courchevelpostinit_db_1 down
 ```
 
-This 'post_init' container is also stopped using the options above.
+This 'postinit' container is also stopped using the options above.
 
 ```sh
 docker-compose -f docker-compose-init.yml -p courchevelpostinit down

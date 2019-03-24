@@ -1,0 +1,20 @@
+version: '3.6'
+services:
+  rs:
+    build:
+      args:
+        base_tag: "3.5.2"
+      context: .
+    environment:
+      - PASSWORD=abc123
+    image: whistler:latest
+    ports:
+      -
+        published: 18787
+        target: 8787
+    tty: true
+    volumes:
+      -
+        type: bind
+        source: ./r
+        target: /home/rstudio

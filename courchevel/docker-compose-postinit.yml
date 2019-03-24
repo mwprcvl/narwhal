@@ -3,10 +3,10 @@ services:
   db:
     env_file:
       - ${ENV_FILE}
-    image: courchevel:post_init
+    image: courchevel:postinit
     ports:
       -
-        published: ${POST_INIT_POSTGRES_HOST_PORT}
+        published: ${POSTINIT_POSTGRES_HOST_PORT}
         target: 5432
     volumes:
       -

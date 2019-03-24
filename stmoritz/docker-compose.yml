@@ -6,10 +6,11 @@ services:
         base_tag: "11.2-alpine"
         init_scripts_path: ${DB_INIT_SCRIPTS_PATH}
       context: ./db/
+    container_name: ${PROJECT}_db_1
     environment:
-      - POSTGRES_USER=${POSTGRES_DB_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_DB_PASS}
-      - POSTGRES_DB=${POSTGRES_DB_NAME}
+      - POSTGRES_USER=${PROJECT}
+      - POSTGRES_PASSWORD=${PROJECT}
+      - POSTGRES_DB=${PROJECT}
     image: ${PROJECT}_db:latest
     ports:
       -
@@ -32,15 +33,18 @@ services:
       - bash 
       - -ic 
       - 'jupyter notebook --notebook-dir=/notebooks --no-browser --ip=0.0.0.0'
+    container_name: ${PROJECT}_py_1
     depends_on:
       - db
+    env_file:
+      - ${ENV_FILE}
     environment:
-      - JUPYTER_TOKEN=123
+      - JUPYTER_TOKEN=abc123
       - DB_HOST=${POSTGRES_DB_HOST}
       - DB_PORT=${POSTGRES_DB_PORT}
-      - DB_NAME=${POSTGRES_DB_NAME}
-      - DB_USER=${POSTGRES_DB_USER}
-      - DB_PASS=${POSTGRES_DB_PASS}
+      - DB_NAME=${PROJECT}
+      - DB_USER=${PROJECT}
+      - DB_PASS=${PROJECT}
     image: ${PROJECT}_py:latest
     ports:
       -

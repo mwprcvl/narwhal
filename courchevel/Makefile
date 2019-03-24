@@ -4,7 +4,7 @@
 #  build :: build using docker-compose
 #  up :: run the containers
 #  down :: stop the containers
-#  tag :: tag the image as post_init
+#  tag :: tag the image as postinit
 #  rm :: remove a container
 #  reset :: remove the database volume data
 #  config :: see how docker compose will be configures from environment
@@ -15,7 +15,7 @@
 
 proj := courchevel
 LATEST := ${proj}:latest
-VER := ${proj}:post_init
+VER := ${proj}:postinit
 CONTAINER_NAME := ${proj}_db_1
 
 build:
@@ -49,16 +49,16 @@ config:
 	@docker-compose config
 
 commit:
-	@docker commit ${CONTAINER_NAME} ${proj}:post_init
+	@docker commit ${CONTAINER_NAME} ${proj}:postinit
 
 postrestart:
-	@bash post_init_up.sh
+	@bash postinit_up.sh
 
 postup:
-	@docker-compose -f docker-compose-post_init.yml -p ${proj}postinit up -d
+	@docker-compose -f docker-compose-postinit.yml -p ${proj}postinit up -d
 
 postdown:
-	@docker-compose -f docker-compose-post_init.yml -p ${proj}postinit down
+	@docker-compose -f docker-compose-postinit.yml -p ${proj}postinit down
 
 psqlpostinit:
 	@psql -h 192.168.99.100 -p 15433 -U ${proj} -d ${proj}
