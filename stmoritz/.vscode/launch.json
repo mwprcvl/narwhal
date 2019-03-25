@@ -5,7 +5,7 @@
             "name": "Attach (Remote Debug)",
             "type": "python",
             "request": "attach",
-            "port": 3000,
+            "port": 13000,
             "host": "192.168.99.100",
             "pathMappings": [
                 {
@@ -19,7 +19,7 @@
             "name": "Attach (Server Debug)",
             "type": "python",
             "request": "attach",
-            "port": 3000,
+            "port": 13000,
             "host": "remote_host_tbd",
             "pathMappings": [
                 {

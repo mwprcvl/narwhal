@@ -7,6 +7,8 @@ services:
         init_scripts_path: ${DB_INIT_SCRIPTS_PATH}
       context: ./db/
     container_name: ${PROJECT}_db_1
+    env_file:
+      - ${ENV_FILE}
     environment:
       - POSTGRES_USER=${PROJECT}
       - POSTGRES_PASSWORD=${PROJECT}
