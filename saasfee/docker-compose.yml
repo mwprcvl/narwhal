@@ -3,7 +3,7 @@ services:
   py:
     build:
       args:
-        base_tag: 4.5.12
+        base_tag: 5.3.0
         conda_user: appuser
         conda_home: /appuser
       context: .

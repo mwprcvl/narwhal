@@ -1,10 +1,10 @@
 # Use miniconda3 base image
-ARG base_tag=4.5.12
-FROM continuumio/miniconda3:${base_tag}
+ARG base_tag=5.3.0
+FROM continuumio/anaconda3:${base_tag}
 
 # Copy the environment file so conda environment can be created
-#COPY environment.yml .
-COPY ./py_notebooks/explicit.yml environment.yml
+COPY environment.yml .
+#COPY explicit.yml environment.yml
 RUN /opt/conda/bin/conda env create --file environment.yml && \
   /opt/conda/bin/conda clean -tipsy
 

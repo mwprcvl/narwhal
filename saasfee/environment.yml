@@ -2,7 +2,4 @@ name: saasfee
 dependencies:
   - python=3.7
   - jupyter
-  - pandas=0.24
   - psycopg2=2.7
-  - sqlalchemy=1.2
-  - scikit-learn=0.20

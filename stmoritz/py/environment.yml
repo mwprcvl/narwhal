@@ -13,4 +13,4 @@ dependencies:
   - python-cufflinks=0.14
   - sqlalchemy=1.2
   - scikit-learn=0.20
-  - pyyaml
+  - ruamel_yaml=0.15

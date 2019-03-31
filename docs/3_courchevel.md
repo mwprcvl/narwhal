@@ -2,7 +2,7 @@
 
 ## Purpose
 
-I wanted to document the steps necessary to take a vanilla database image and customize the data loaded into the container at runtime. This information is also captured in a working example [here](../courchevel).
+I wanted to document the steps necessary to take a vanilla database image and customize the data loaded into the container at runtime. This information is also captured in a working example [here](../courchevel). The Docker image is available [here](https://hub.docker.com/r/mwprcvl/courchevel).
 
 ## Prerequisites
 

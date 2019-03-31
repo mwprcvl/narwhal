@@ -2,7 +2,7 @@
 
 ## Purpose
 
-I wanted to document my attempt to integrate Rstudio with Docker to improve the reproducibility of my work in different environments.
+I wanted to document my attempt to integrate Rstudio with Docker to improve the reproducibility of my work in different environments. This information is also captured in a working example [here](../whistler). The Docker image is available [here](https://hub.docker.com/r/mwprcvl/whistler).
 
 ## Prerequisites
 

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Document the steps involved in setting up containers containing a Python development environment and a PostgreSQL database.
+Document the steps involved in setting up containers containing a Python development environment and a PostgreSQL database. This information is also captured in a working example [here](../stmoritz). The Docker images for each container are available for [PostgreSQL](https://hub.docker.com/r/mwprcvl/stmoritz_db), [Python](https://hub.docker.com/r/mwprcvl/stmoritz_py), and [R](https://hub.docker.com/r/mwprcvl/stmoritz_rs).
 
 ## Prerequisites
 

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-I wanted to set up an Anaconda Python environment on a Docker container. This would be a starting point for a project that could be developed on a laptop and scaled on a server. This information is also captured in a working example [here](../saasfee).
+I wanted to set up an Anaconda Python environment on a Docker container. This would be a starting point for a project that could be developed on a laptop and scaled on a server. This information is also captured in a working example [here](../saasfee). The Docker image is available [here](https://hub.docker.com/r/mwprcvl/saasfee).
 
 ## Prerequisites
 
@@ -13,8 +13,8 @@ The following text assumes Docker is installed and familiarity with `docker-comp
 The `Dockerfile` is using the Miniconda base image, and creating a conda environment from an  `environment.yml` file. After install, there is some cleanup to reduce the resulting image size.
 
 ```docker
-ARG base_tag=4.5.12
-FROM continuumio/miniconda3:${base_tag}
+ARG base_tag=5.3.0
+FROM continuumio/anaconda3:${base_tag}
 COPY environment.yml .
 RUN /opt/conda/bin/conda env create --file environment.yml && \
   /opt/conda/bin/conda clean -tipsy
@@ -25,10 +25,7 @@ name: saasfee
 dependencies:
   - python=3.7
   - jupyter
-  - pandas=0.24
   - psycopg2=2.7
-  - sqlalchemy=1.2
-  - scikit-learn=0.20
 ```
 
 ## A non-root user for the container
