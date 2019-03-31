@@ -27,8 +27,14 @@ bashdb:
 bashpy:
 	@docker exec -it ${proj}_py_1 bash
 
-app:
+bashrs:
+	@docker exec -it ${proj}_rs_1 bash
+
+papp:
 	@docker exec -it ${proj}_py_1 bash /app/run_app.sh
+
+rapp:
+	@docker exec -it ${proj}_rs_1 Rscript db_conn.R
 
 sync:
 	@echo "sync ${PWD} with ${remote}:${proj}"
@@ -36,6 +42,6 @@ sync:
 	@echo "sync complete"
 
 getnb:
-	@echo "fetching jupyter notebooks from ${remote}"
-	@rsync -avqz -e "ssh -i ${sshkey}" ${remote}:${proj}/py/notebooks/ py/notebooks/
+	@echo "fetching jupyter lab from ${remote}"
+	@rsync -avqz -e "ssh -i ${sshkey}" ${remote}:${proj}/py/lab/ py/lab/
 	@echo "sync complete"

@@ -8,6 +8,10 @@ COPY ${environment_file} environment.yml
 RUN /opt/conda/bin/conda env create --file environment.yml && \
     /opt/conda/bin/conda clean -tipsy
 
+# Plotly extension required for jupyterlab
+RUN /opt/conda/envs/appenv/bin/jupyter \
+    labextension install @jupyterlab/plotly-extension
+
 # Add the appuser to avoid running container as root
 ARG srcdir="app"
 ARG user="appuser"

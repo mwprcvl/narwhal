@@ -1,4 +1,4 @@
-# A simple python service with jupyter notebooks and a database container
+# A simple python service with jupyter lab, rstudio, and a database container
 
 ## Purpose
 
@@ -41,9 +41,9 @@ PY_ENVIRONMENT_FILE=environment.yml
 PY_NOTEBOOK_PORT=18888
 ```
 
-## Database service
+## PostgreSQL database service
 
-For PostgreSQL, I demonstrate how to configure the image with a custom username, custom port, and a Docker volume for persisting data. The service has a volume like:
+For PostgreSQL, I configure the image with a custom username, custom port, and a Docker volume for persisting data as described (here)[3_courchevel.md]. The service has a volume like:
 
 ```yml
 services:
@@ -66,9 +66,25 @@ Docker recommend using volumes like this for persisting data.
 
 The `db_init` directory is for any scripts that should run upon launching the container for the first time.
 
-## Python service
+## Python and JupyterLab service
 
-## Debugging container from local host
+For Python, I configure the image as described (here)[4_saasfee.md]. Local directories for Python application code and JupyterLab on the container are also local volumes.
+
+```yml
+services:
+  py:
+    volumes:
+      -
+        type: bind
+        source: ./py/lab
+        target: /lab
+      -
+        type: bind
+        source: ./py/app
+        target: /app
+```
+
+### Debugging Python container from localhost
 
 With the configuration of binding volumes to make editing code locally possible, VSCode also can be configured to debug the container using the container's Python interpreter. I configure debug ports in the Compose YAML:
 
@@ -81,7 +97,7 @@ services:
         target: 3000
 ```
 
-Within VSCode, we set the debug port and the path mappings. *This must be in the project directory*.
+Within VSCode, we set the debug port and the path mappings. *This must be in the project directory*. I am running a VM with Docker, so instead of localhost, `127.0.0.1`, I have the VM's IP address, `192.168.99.100`.
 
 ```
 {
@@ -105,7 +121,7 @@ Within VSCode, we set the debug port and the path mappings. *This must be in the
 }
 ```
 
-The application to be debugged will need some additional code upfront. Here I assume port 3000 and localhost for the container to debug.
+The application to be debugged will need some additional code upfront. Here I assume port 3000 and localhost for the container.
 
 ```python
 import ptvsd
@@ -123,13 +139,69 @@ docker exec -it stmoritz_py_1 bash /app/run_app.sh
 
 A debug console should now be available at the breakpoint that was set.
 
-## Sharing and syncing with remote host
+### Sharing and syncing with remote host
 
 Debugging a remote host can be challenging in some highly restricted environments, for example a debug port might not be available. A simple alternative is to use `rsync` to push code changes to the remote without involving `git`. I roll in an ssh key to avoid having to enter my password on each sync, and put everything as a command in the `Makefile`.
 
 ```
-rsync:
+sync:
   @echo "sync ${PWD} with ${remote}:${proj}"
   @rsync -avqz -e "ssh -i ${sshkey}" --delete --filter ":- .gitignore" --filter "- .git/" . ${remote}:${proj}/
   @echo "sync complete"
 ```
+
+## R and Rstudio service
+
+For Rstudio, I configure the image as described (here)[4_whistler.md]. Local directories for R code on the container are also local volumes.
+
+```yml
+services:
+  rs:
+    volumes:
+    -
+      type: bind
+      source: ./rs/r
+      target: /home/rstudio
+```
+
+I put a file `/home/rstudio/.Renviron` in the Rstudio container with appropriate environment variables for connecting to the database container.
+
+```sh
+DB_HOST=db
+DB_PORT=5432
+DB_NAME=stmoritz
+DB_USER=stmoritz
+DB_PASS=stmoritz
+```
+
+To demonstrate that I can connect to the database, I use an Rscript created locally (`./rs/r/db_conn.R`) that gets put into the container's home directory.
+
+```r
+readRenviron(".Renviron")
+
+library(RPostgreSQL)
+
+conn <- dbConnect(
+  RPostgreSQL::PostgreSQL(),
+  host = Sys.getenv("DB_HOST"),
+  port = Sys.getenv("DB_PORT"),
+  dbname = Sys.getenv("DB_NAME"),
+  user = Sys.getenv("DB_USER"),
+  password = Sys.getenv("DB_PASS"))
+
+res <- dbGetQuery(conn, "SELECT VERSION();")
+
+print(res)
+
+dbDisconnect(conn)
+```
+
+I get the reassuring output that I connected to the expected database version.
+
+```
+PostgreSQL 11.2 on x86_64-pc-linux-musl, compiled by gcc (Alpine 8.2.0) 8.2.0, 64-bit
+```
+
+## Summary
+
+I have demonstrated how to configure a PostgreSQL database container with Anaconda Python and Jupyter. I have shown how to use VSCode to debug code on the container from a local VSCode IDE.

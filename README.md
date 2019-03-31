@@ -14,7 +14,7 @@ Docker. A free account on DockerHub. Anaconda. VSCode for Python remote debuggin
 
 * Introductory use of Docker [here](docs/1_valthorens.md)
 * Use of Compose and environment variables [here](docs/2_lesarcs.md)
-* Installing Anaconda Python on a container [here](docs/3_saasfee.md)
-* Initializing a Postgres database container [here](docs/4_courchevel.md)
+* Initializing a Postgres database container [here](docs/3_courchevel.md)
+* Installing Anaconda Python on a container [here](docs/4_saasfee.md)
 * An example for setting up an R container [here](docs/5_whistler.md)
-* An example for setting up a data science container with a database service [here](docs/6_stmoritz.md)
+* An example for setting up Python and R containers with a Postgres database service [here](docs/6_stmoritz.md)

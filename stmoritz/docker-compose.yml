@@ -34,7 +34,7 @@ services:
     command: 
       - bash 
       - -ic 
-      - 'jupyter notebook --notebook-dir=/notebooks --no-browser --ip=0.0.0.0'
+      - 'jupyter lab --notebook-dir=/lab --no-browser --ip=0.0.0.0'
     container_name: ${PROJECT}_py_1
     depends_on:
       - db
@@ -59,11 +59,39 @@ services:
     volumes:
       -
         type: bind
-        source: ./py/notebooks
-        target: /notebooks
+        source: ./py/lab
+        target: /lab
       -
         type: bind
         source: ./py/app
         target: /app
+  rs:
+    build:
+      args:
+        base_tag: '3.5.2'
+      context: ./rs/
+    container_name: ${PROJECT}_rs_1
+    depends_on:
+      - db
+    env_file:
+      - ${ENV_FILE}
+    environment:
+      - PASSWORD=abc123
+      - DB_HOST=${POSTGRES_DB_HOST}
+      - DB_PORT=${POSTGRES_DB_PORT}
+      - DB_NAME=${PROJECT}
+      - DB_USER=${PROJECT}
+      - DB_PASS=${PROJECT}
+    image: ${PROJECT}_rs:latest
+    ports:
+      -
+        published: ${RSTUDIO_PORT}
+        target: 8787
+    tty: true
+    volumes:
+      -
+        type: bind
+        source: ./rs/r
+        target: /home/rstudio
 volumes:
   db_1:

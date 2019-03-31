@@ -4,10 +4,13 @@ channels:
   - conda-forge
 dependencies:
   - python=3.7
-  - jupyter=1.0
+  - jupyterlab=0.35
+  - nodejs=11.11
   - pandas=0.24
-  - psycopg2=2.7
   - plotly=3.6
+  - psycopg2=2.7
   - ptvsd=4.2.4
+  - python-cufflinks=0.14
   - sqlalchemy=1.2
   - scikit-learn=0.20
+  - pyyaml

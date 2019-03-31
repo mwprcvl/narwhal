@@ -107,5 +107,5 @@ venv.bak/
 */.vscode/settings.json
 
 # Rstudio
-*/r/.config/*
-*/r/.rstudio/*
+**/r/.config/*
+**/r/.rstudio/*
