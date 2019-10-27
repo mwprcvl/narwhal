@@ -112,3 +112,6 @@ venv.bak/
 
 # JupyterLab
 **/.~*.ipynb
+
+**/.bash_history
+**/.DS_Store

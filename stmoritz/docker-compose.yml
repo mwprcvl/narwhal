@@ -6,7 +6,7 @@ services:
         base_tag: "11.2-alpine"
         init_scripts_path: ${DB_INIT_SCRIPTS_PATH}
       context: ./db/
-    container_name: ${PROJECT}_db_1
+    container_name: ${PROJECT}_db
     env_file:
       - ${ENV_FILE}
     environment:
@@ -16,32 +16,39 @@ services:
     image: ${PROJECT}_db:latest
     ports:
       -
-        published: ${POSTGRES_DB_HOST_PORT}
+        published: ${DB_POSTGRES_HOST_PORT}
         target: ${POSTGRES_DB_PORT}
     volumes:
       -
         type: volume
-        source: db_1
+        source: db
         target: /var/lib/postgresql/data
   py:
     build:
       args:
-        base_tag: "4.5.12"
-        environment_file: ${PY_ENVIRONMENT_FILE}
-        home: /usr/local/appuser
-        user: appuser
+        base_tag: "1386e2046833"
+        airflow_home: ${PY_AIRFLOW_HOME}
+        dags_home: ${PY_DAGS_PATH}
+        data_volume: ${PY_DATA_PATH}
+        jupyter_home: ${PY_NOTEBOOK_DIR}
+        python_path: ${PY_PYTHONPATH}
       context: ./py/
-    command: 
-      - bash 
-      - -ic 
-      - 'jupyter lab --notebook-dir=/lab --no-browser --ip=0.0.0.0'
-    container_name: ${PROJECT}_py_1
+    command:
+      - bash
+      - -ic
+      - 'jupyter lab --notebook-dir ${PY_NOTEBOOK_DIR} --no-browser --ip=0.0.0.0'
+    container_name: ${PROJECT}_py
     depends_on:
       - db
     env_file:
       - ${ENV_FILE}
     environment:
-      - JUPYTER_TOKEN=abc123
+      - AIRFLOW_HOME=${PY_AIRFLOW_HOME}
+      - DAGS_FOLDER=${PY_DAGS_PATH}
+      - DATA_PATH=${PY_DATA_PATH}
+      - PYTHONPATH=${PY_PYTHONPATH}
+      - JUPYTER_TOKEN=${IDE_PASS}
+      - JUPYTER_ENABLE_LAB=1
       - DB_HOST=${POSTGRES_DB_HOST}
       - DB_PORT=${POSTGRES_DB_PORT}
       - DB_NAME=${PROJECT}
@@ -53,30 +60,49 @@ services:
         published: ${PY_DEBUG_PORT}
         target: 3000
       -
-        published: ${PY_NOTEBOOK_PORT}
+        published: ${PY_FLASK_PORT}
+        target: 5000
+      -
+        published: ${PY_DASH_PORT}
+        target: 8050
+      -
+        published: ${PY_AIRFLOW_PORT}
+        target: 8080
+      -
+        published: ${PY_JUPYTER_PORT}
         target: 8888
     tty: true
     volumes:
       -
         type: bind
-        source: ./py/lab
-        target: /lab
+        source: ./py/app
+        target: ${PY_PYTHONPATH}
       -
         type: bind
-        source: ./py/app
-        target: /app
+        source: ./py/dags
+        target: ${PY_DAGS_PATH}
+      -
+        type: bind
+        source: ./py/lab
+        target: ${PY_NOTEBOOK_DIR}
+      -
+        type: volume
+        source: data
+        target: ${PY_DATA_PATH}
   rs:
     build:
       args:
-        base_tag: '3.5.2'
+        base_tag: "3.5.2"
+        data_volume: ${RS_DATA_PATH}
       context: ./rs/
-    container_name: ${PROJECT}_rs_1
+    container_name: ${PROJECT}_rs
     depends_on:
       - db
     env_file:
       - ${ENV_FILE}
     environment:
-      - PASSWORD=abc123
+      - PASSWORD=${IDE_PASS}
+      - DATA_PATH=${RS_DATA_PATH}
       - DB_HOST=${POSTGRES_DB_HOST}
       - DB_PORT=${POSTGRES_DB_PORT}
       - DB_NAME=${PROJECT}
@@ -85,7 +111,7 @@ services:
     image: ${PROJECT}_rs:latest
     ports:
       -
-        published: ${RSTUDIO_PORT}
+        published: ${RS_RSTUDIO_PORT}
         target: 8787
     tty: true
     volumes:
@@ -93,5 +119,10 @@ services:
         type: bind
         source: ./rs/r
         target: /home/rstudio
+      -
+        type: volume
+        source: data
+        target: ${RS_DATA_PATH}
 volumes:
-  db_1:
+  db:
+  data:

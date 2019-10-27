@@ -1,43 +1,63 @@
-# Use miniconda3 base image
-ARG base_tag="4.5.12"
-FROM continuumio/miniconda3:${base_tag}
+ARG base_tag="1386e2046833"
+FROM jupyter/minimal-notebook:${base_tag}
 
-# Copy the environment file so conda environment can be created
-ARG environment_file="environment.yml"
-COPY ${environment_file} environment.yml
-RUN /opt/conda/bin/conda env create --file environment.yml && \
-    /opt/conda/bin/conda clean -tipsy
+USER $NB_UID
 
-# Plotly extension required for jupyterlab
-RUN /opt/conda/envs/appenv/bin/jupyter \
-    labextension install @jupyterlab/plotly-extension
+# Install Python 3 packages
+RUN conda install --quiet --yes \
+    'conda-forge::blas=*=openblas' \
+    'matplotlib=3.1.*' \
+    'pandas=0.25*' \
+    'scikit-learn=0.21*' \
+    'scipy=1.3*' \
+    'statsmodels=0.10*' \
+    'conda-forge::airflow=1.10*' \
+    'conda-forge::dash=1.4*' \
+    'conda-forge::dash-daq=0.2*' \
+    'conda-forge::ipdb=0.12*' \
+    'conda-forge::psycopg2=2.8*' \
+    'conda-forge::pylint=2.4*' \
+    'conda-forge::pytest=5.2*' \
+    && \
+    conda clean --all -f -y && \
+    npm cache clean --force && \
+    rm -rf $CONDA_DIR/share/jupyter/lab/staging && \
+    rm -rf /home/$NB_USER/.cache/yarn && \
+    rm -rf /home/$NB_USER/.node-gyp && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
 
-# Add the appuser to avoid running container as root
-ARG srcdir="app"
-ARG user="appuser"
-ARG home=/usr/local/${user}
+# Import matplotlib the first time to build the font cache.
+ENV XDG_CACHE_HOME /home/$NB_USER/.cache/
+RUN MPLBACKEND=Agg python -c "import matplotlib.pyplot" && \
+    fix-permissions /home/$NB_USER
 
+# port for vscode
+EXPOSE 3000
 
-# Explicitly set user/group IDs for a non-root user
-# also create the user's home directory with appropriate permissions
-RUN set -eux; \
-    groupadd -r ${user} --gid=999; \
-    useradd -r -g ${user} --uid=999 --home-dir=${home} \
-    --shell=/bin/bash ${user}; \
-    mkdir -p ${home}; \
-    chown -R ${user}:${user} ${home}
+# port for flask
+EXPOSE 5000
 
-# activate the environment for the user
-ENV USER=${user}
-USER ${user}
-WORKDIR ${home}
-RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
-    echo "conda activate appenv" >> ~/.bashrc
+# port for dash
+EXPOSE 8050
+
+# port for airflow
+EXPOSE 8080
 
 # port for jupyter
 EXPOSE 8888
 
-WORKDIR /
+ARG airflow_home=/home/$NB_USER/airflow
+ARG data_volume=/home/$NB_USER/data
+ARG jupyter_home=/home/$NB_USER/lab
+ARG python_path=/home/$NB_USER/app
+RUN mkdir -p ${airflow_home}/dags && \
+    mkdir ${data_volume} && \
+    mkdir ${python_path} && \
+    mkdir ${jupyter_home} && \
+    fix-permissions /home/$NB_USER
+
+USER $NB_UID
 
 # Run bash upon entry to keep alive
 CMD [ "/bin/bash" ]

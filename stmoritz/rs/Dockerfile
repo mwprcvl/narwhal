@@ -8,5 +8,9 @@ RUN Rscript -e 'devtools::install_version("plotly", version = "4.8.0", repos = "
   Rscript -e 'devtools::install_version("xgboost", version = "0.81.0.1", upgrade = "never", repos = "http://cran.us.r-project.org")' && \
   Rscript -e 'devtools::install_version("MatchIt", version = "3.0.2", upgrade = "never", repos = "http://cran.us.r-project.org")'
 
+ARG data_volume=/data
+RUN mkdir ${data_volume} && \
+    chmod 777 ${data_volume}
+
 # launch rstudio in browser as default
 WORKDIR /home/rstudio

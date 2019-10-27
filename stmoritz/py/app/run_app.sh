@@ -1,3 +1,2 @@
 #!/usr/bin/env bash
-source ${HOME}/.bashrc 
-python /app/app.py
+python app/app.py

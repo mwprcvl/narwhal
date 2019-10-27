@@ -1,0 +1,81 @@
+version: "3.6"
+services:
+  db:
+    build:
+      args:
+        base_tag: "11.2-alpine"
+        init_scripts_path: ${DB_INIT_SCRIPTS_PATH}
+      context: ./db/
+    container_name: ${PROJECT}_db
+    env_file:
+      - ${ENV_FILE}
+    environment:
+      - POSTGRES_USER=${PROJECT}
+      - POSTGRES_PASSWORD=${PROJECT}
+      - POSTGRES_DB=${PROJECT}
+    image: ${PROJECT}_db:latest
+    ports:
+      -
+        published: ${DB_POSTGRES_HOST_PORT}
+        target: ${POSTGRES_DB_PORT}
+    volumes:
+      -
+        type: volume
+        source: db
+        target: /var/lib/postgresql/data
+  py:
+    build:
+      args:
+        base_tag: "3.7.4-stretch"
+        requirements_file: requirements.txt
+        airflow_home: ${PY_AIRFLOW_HOME}
+        dags_home: ${PY_DAGS_PATH}
+        data_volume: ${PY_DATA_PATH}
+        python_path: ${PY_PYTHONPATH}
+      context: ./py/
+    container_name: ${PROJECT}_py
+    depends_on:
+      - db
+    env_file:
+      - ${ENV_FILE}
+    environment:
+      - AIRFLOW_HOME=${PY_AIRFLOW_HOME}
+      - DAGS_FOLDER=${PY_DAGS_PATH}
+      - DATA_PATH=${PY_DATA_PATH}
+      - PYTHONPATH=${PY_PYTHONPATH}
+      - DB_HOST=${POSTGRES_DB_HOST}
+      - DB_PORT=${POSTGRES_DB_PORT}
+      - DB_NAME=${PROJECT}
+      - DB_USER=${PROJECT}
+      - DB_PASS=${PROJECT}
+    image: ${PROJECT}:latest
+    ports:
+      -
+        published: ${PY_DEBUG_PORT}
+        target: 3000
+      -
+        published: ${PY_FLASK_PORT}
+        target: 5000
+      -
+        published: ${PY_DASH_PORT}
+        target: 8050
+      -
+        published: ${PY_AIRFLOW_PORT}
+        target: 8080
+    tty: true
+    volumes:
+      -
+        type: bind
+        source: ./py/app
+        target: ${PY_PYTHONPATH}
+      -
+        type: bind
+        source: ./py/dags
+        target: ${PY_DAGS_PATH}
+      -
+        type: volume
+        source: data
+        target: ${PY_DATA_PATH}
+volumes:
+  db:
+  data:
